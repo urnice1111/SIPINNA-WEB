@@ -1,32 +1,16 @@
-import { useRef, useEffect, useState } from 'react'
-import mapboxgl from 'mapbox-gl'
-import 'mapbox-gl/dist/mapbox-gl.css';
 import './App.css'
+import InteractiveMap from './pages/InteractiveMap'
+import { BrowserRouter, Routes, Route} from 'react-router-dom'; // <- Add link for future navbar
+
 
 function App() {
-
-  const mapRef = useRef() // This references the map for change it
-  const mapContainerRef = useRef() // This references the map for display
-
-  useEffect(() => {
-    const MAP_BOX_API_KEY = import.meta.env.VITE_MAP_BOX_TOKEN;
-
-    mapRef.current = new mapboxgl.Map({
-      accessToken: MAP_BOX_API_KEY,
-      container: mapContainerRef.current,
-      center: [-99.2222, 19.5983],
-      zoom: 18
-    });
-
-    return () => {
-      mapRef.current.remove()
-    }
-  }, [])
-
   return (
-    <>
-      <div id='map-container' ref={mapContainerRef}/>
-    </>
+    <BrowserRouter>
+      <Routes>
+        <Route path='/map' element={<InteractiveMap/>}/>
+      </Routes>
+      
+    </BrowserRouter>
   )
 }
 
