@@ -27,3 +27,29 @@
   border-radius: 10px;
   cursor: pointer;
 }
+
+.interactive-map-layout {
+  display: grid;
+  grid-template-columns: 80% 20%;
+  width: 100%;
+  height: 100%;
+}
+
+.map-panel {
+  position: relative;
+  min-width: 0;
+  height: 100%;
+}
+
+#map-container {
+  width: 100%;
+  height: 100%;
+}
+
+.information-panel {
+  height: 100%;
+  padding: 1rem;
+  box-sizing: border-box;
+  overflow-y: auto;
+  background-color: #ffffff;
+}
