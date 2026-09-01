@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
-import mapboxgl from 'mapbox-gl'
+import * as mapboxgl from 'mapbox-gl/esm';
 import 'mapbox-gl/dist/mapbox-gl.css'
 import './InteractiveMap.css'
+
 
 type CoordinatePair = [number, number]
 
@@ -59,6 +60,23 @@ function MapContainer() {
                 coordinates: [-99.2267, 19.5969],
               },
             },
+            {
+              type: 'Feature',
+              properties: {},
+              geometry: {
+                type: 'Point',
+                coordinates: [-99.2270, 19.5969],
+              },
+            },
+            {
+              type: 'Feature',
+              properties: {},
+              geometry: {
+                type: 'Point',
+                coordinates: [-99.2269, 19.5970],
+              },
+              
+            },
           ],
         },
       })
@@ -92,6 +110,7 @@ function MapContainer() {
         map.getCanvas().style.cursor = ''
       })
 
+
       try {
         const response = await fetch(
           'https://gaia.inegi.org.mx/wscatgeo/v2/geo/mgem/15013',
@@ -124,10 +143,58 @@ function MapContainer() {
           source: 'atizayork',
           paint: {
             'fill-color': '#0080ff',
-            'fill-opacity': 0.5,
+            'fill-opacity': 0.2,
             'fill-outline-color': '#004080',
           },
         })
+
+        map.addLayer({
+            id: 'heat-zones',
+            type: 'heatmap',
+            source: 'points',
+            paint: {
+                'heatmap-intensity': [
+                    'interpolate',
+                    ['linear'],
+                    ['zoom'],
+                    0,
+                    1,
+                    9,
+                    3,
+                ],
+
+                'heatmap-color': [
+                    'interpolate',
+                    ['linear'],
+                    ['heatmap-density'],
+                    0,
+                    'rgba(33,102,172,0)',
+                    0.2,
+                    'rgb(103,169,207)',
+                    0.4,
+                    'rgb(209,229,240)',
+                    0.6,
+                    'rgb(253,219,199)',
+                    0.8,
+                    'rgb(239,138,98)',
+                    1,
+                    'rgb(178,24,43)',
+                ],
+
+                'heatmap-radius': [
+                    'interpolate',
+                    ['linear'],
+                    ['zoom'],
+                    0,2,
+                    10,15,
+                    19,40,
+                    20,45
+                ]
+                },
+            slot: 'top'
+        });
+
+        
       } catch (error) {
         if (error instanceof DOMException && error.name === 'AbortError') return
         console.error('Error fetching Atizapan data:', error)
