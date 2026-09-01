@@ -1,0 +1,133 @@
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-image: url('../assets/background.png');  
+  background-size: cover;
+  background-position: center;
+}
+
+/* Recuadro de login */
+.login-card {
+  width: 380px;
+  max-width: 90vw;
+  padding: 40px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.3);  
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25); 
+  color: #000;
+}
+
+.login-card h1 {
+  margin: 0 0 8px;
+  font-size: 28px;
+  font-family: sans-serif;
+  text-align: center;
+}
+
+/* Logo de SIPINNA */
+.login-logo {
+  display: block;
+  margin: 0 auto 16px;
+  max-width: 180px;
+  width: 100%;
+  height: auto;
+}
+
+/* "Iniciar sesión" */
+.login-card h2 {
+  margin: 0 0 20px;
+  font-size: 20px;
+  font-family: sans-serif;
+  font-weight: 400;
+  text-align: center;
+  opacity: 0.9;
+}
+
+/* Contenedor del formulario */
+.login-card form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Etiquetas de campos */
+.login-card label {
+  font-size: 14px;
+  opacity: 0.9;
+  font-family: sans-serif;
+}
+
+/* Campos de entrada de email y password */
+.login-card input[type='text'],
+.login-card input[type='password'] {
+  padding: 10px;
+  border-radius: 15px;
+  border: 1.2px solid rgba(0,0,0, 0.3);
+  background: rgba(255, 255, 255, 0.15); 
+  color: #000;
+  outline: none;
+  font-size: 15px;
+  font-family: sans-serif;
+}
+
+/* Placeholder */
+.login-card input[type='text']::placeholder,
+.login-card input[type='password']::placeholder {
+  color: #000;
+  font-size: 13px;
+  font-family: sans-serif;
+}
+
+/* Botón de iniciar sesión */
+.login-card button {
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: transform 0.2s, background 0.2s;
+  background: #2563eb;
+  color: #fff;
+  font-size: 16px;
+  font-family: sans-serif;
+  font-weight: bold;
+}
+
+/* Hover en el botón */
+.login-card button:hover {
+  transform: translateY(2px);
+  background: #1d4ed8;
+}
+
+/* "Recordarme" y "¿Olvidaste tu contraseña?" */
+.login-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  font-family: sans-serif;
+}
+
+/* Enlaces en opciones y párrafo final */
+.login-options a,
+.login-card p a {
+  color: #93c5fd;
+  text-decoration: none;
+}
+
+/* Efecto hover para enlaces */
+.login-options a:hover,
+.login-card p a:hover {
+  text-decoration: underline;
+}
+
+/* "¿No tienes cuenta? Regístrate" */
+.login-card p {
+  margin-top: 20px;
+  text-align: center;
+  font-size: 14px;
+  font-family: sans-serif;
+}

@@ -1,15 +1,15 @@
 import './App.css'
 import InteractiveMap from './pages/InteractiveMap'
-import { BrowserRouter, Routes, Route} from 'react-router-dom'; // <- Add link for future navbar
-
+import Login from './pages/Login'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path='/map' element={<InteractiveMap/>}/>
+        <Route path="/map" element={<InteractiveMap />} />
+        <Route path="/login" element={<Login />} />
       </Routes>
-      
     </BrowserRouter>
   )
 }
