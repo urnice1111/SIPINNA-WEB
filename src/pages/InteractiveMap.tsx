@@ -73,6 +73,14 @@ function MapContainer() {
               properties: {},
               geometry: {
                 type: 'Point',
+                coordinates: [-99.2270, 19.5959],
+              },
+            },
+            {
+              type: 'Feature',
+              properties: {},
+              geometry: {
+                type: 'Point',
                 coordinates: [-99.2269, 19.5970],
               },
               
@@ -85,10 +93,26 @@ function MapContainer() {
         id: 'circle',
         type: 'circle',
         source: 'points',
+        minzoom: 14,
         paint: {
+            'circle-radius': [
+                    'interpolate',
+                    ['linear'],
+                    ['zoom'],
+                    0,1,
+                    9,5,
+                    20,6
+            ],
           'circle-color': '#4264fb',
-          'circle-radius': 8,
-          'circle-stroke-width': 2,
+          'circle-stroke-width': [
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+            8,0,
+            10,0.5,
+            15,1,
+            17,2
+          ],
           'circle-stroke-color': '#ffffff',
         },
       })
@@ -157,10 +181,9 @@ function MapContainer() {
                     'interpolate',
                     ['linear'],
                     ['zoom'],
-                    0,
-                    1,
-                    9,
-                    3,
+                    0,1,
+                    9,2,
+                    15,7
                 ],
 
                 'heatmap-color': [
@@ -226,6 +249,19 @@ function MapContainer() {
   )
 }
 
+
+function SidePanel(){
+    return <>
+        <div>
+            <div className='sidePanelTitle'>
+                <h1>Reportes</h1>
+                <h2>dawd</h2>
+            </div>
+            
+        </div>
+    </>
+}
+
 export default function InteractiveMap() {
   return (
     <main className="interactive-map-layout">
@@ -233,7 +269,9 @@ export default function InteractiveMap() {
         <MapContainer />
       </section>
 
-      <aside className="information-panel">Contenido del panel</aside>
+      <aside className="information-panel">
+        <SidePanel/>
+      </aside>
     </main>
   )
 }
