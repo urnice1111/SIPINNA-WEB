@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
+import { Link } from 'react-router-dom';
 import './Login.css';
 import sipinnaLogo from "../assets/sipinna.png";
 
@@ -55,7 +56,7 @@ function Login() {
         </form>
 
         <p>
-          ¿No tienes cuenta? <a href="#">Regístrate</a>
+          ¿No tienes cuenta? <Link to="/register" className="register-link">Regístrate</Link>
         </p>
       </div>
     </main>
