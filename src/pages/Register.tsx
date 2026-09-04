@@ -15,22 +15,44 @@ function Register() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  const handleSubmit = (
-    event: FormEvent<HTMLFormElement>
-  ) => {
-    event.preventDefault();
+ const handleSubmit = async (
+  event: FormEvent<HTMLFormElement>
+) => {
+  event.preventDefault();
 
-    console.log({
-      name,
-      lastName,
-      gender,
-      age,
-      phone,
-      email,
-      password,
-      confirmPassword,
+  try {
+    const citizenData = {
+      nombre: `${name} ${lastName}`,
+      edad: Number(age),
+      genero: gender,
+      email: email,
+      password: password,
+    };
+
+    console.log('Enviando:', citizenData);
+
+    const response = await fetch('http://localhost:3000/auth/citizen', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(citizenData),
     });
-  };
+
+    const data = await response.json();
+
+    console.log('Respuesta:', data);
+
+    if (response.ok) {
+      console.log('Registro exitoso');
+    } else {
+      console.log('Error en el registro');
+    }
+
+  } catch (error) {
+    console.error('Error al conectar con el servidor:', error);
+  }
+};
 
   return (
     <main className="register-page">
