@@ -26,6 +26,7 @@ function Register() {
       edad: Number(age),
       genero: gender,
       email: email,
+      telefono: phone,
       password: password,
     };
 
