@@ -17,43 +17,43 @@ function Register() {
 
  const handleSubmit = async (
   event: FormEvent<HTMLFormElement>
-) => {
-  event.preventDefault();
+  ) => {
+    event.preventDefault();
 
-  try {
-    const citizenData = {
-      nombre: `${name} ${lastName}`,
-      edad: Number(age),
-      genero: gender,
-      email: email,
-      telefono: phone,
-      password: password,
-    };
+    try {
+      const citizenData = {
+        nombre: `${name} ${lastName}`,
+        edad: Number(age),
+        genero: gender,
+        email: email,
+        telefono: phone,
+        password: password,
+      };
 
-    console.log('Enviando:', citizenData);
+      console.log('Enviando:', citizenData);
 
-    const response = await fetch('http://localhost:3000/auth/citizen', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(citizenData),
-    });
+      const response = await fetch('http://localhost:3000/auth/citizen', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(citizenData),
+      });
 
-    const data = await response.json();
+      const data = await response.json();
 
-    console.log('Respuesta:', data);
+      console.log('Respuesta:', data);
 
-    if (response.ok) {
-      console.log('Registro exitoso');
-    } else {
-      console.log('Error en el registro');
+      if (response.ok) {
+        console.log('Registro exitoso');
+      } else {
+        console.log('Error en el registro');
+      }
+
+    } catch (error) {
+      console.error('Error al conectar con el servidor:', error);
     }
-
-  } catch (error) {
-    console.error('Error al conectar con el servidor:', error);
-  }
-};
+  };
 
   return (
     <main className="register-page">
