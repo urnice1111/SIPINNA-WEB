@@ -37,7 +37,7 @@ function Login() {
       if (response.ok) {
         console.log('Credenciales correctas');
         console.log(data);
-        navigate('/map', { replace: true });
+        navigate('/dashboard', { replace: true });
       } else {
         console.log('Credenciales incorrectas');
         console.log(data);
