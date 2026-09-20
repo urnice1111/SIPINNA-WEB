@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 
 import './Register.css';
 import sipinnaLogo from '../assets/sipinna.png';
+import { registerCitizen } from '../lib/api';
 
 function Register() {
   const [name, setName] = useState('');
@@ -21,36 +22,17 @@ function Register() {
     event.preventDefault();
 
     try {
-      const citizenData = {
+      await registerCitizen({
         nombre: `${name} ${lastName}`,
         edad: Number(age),
         genero: gender,
         email: email,
         telefono: phone,
         password: password,
-      };
-
-      console.log('Enviando:', citizenData);
-
-      const response = await fetch('http://localhost:3000/auth/citizen', {
-        method: 'POST',
-        credentials: 'include',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(citizenData),
       });
-
-      const data = await response.json();
-
-      console.log('Respuesta:', data);
-
-      if (response.ok) {
-        console.log('Registro exitoso');
-      } else {
-        console.log('Error en el registro');
-      }
-
+      console.log('Registro exitoso');
     } catch (error) {
-      console.error('Error al conectar con el servidor:', error);
+      console.error('Error en el registro:', error);
     }
   };
 

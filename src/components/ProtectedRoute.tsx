@@ -1,13 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
+import { getMe } from '../lib/api';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const [status, setStatus] = useState<'loading' | 'ok' | 'fail'>('loading');
 
   useEffect(() => {
-    fetch('http://localhost:3000/auth/me', { credentials: 'include' })
-      .then((res) => setStatus(res.ok ? 'ok' : 'fail'))
-      .catch(() => setStatus('fail'));
+    getMe().then((ok) => setStatus(ok ? 'ok' : 'fail'));
   }, []);
 
   if (status === 'loading') return <p>Cargando...</p>;

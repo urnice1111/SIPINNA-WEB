@@ -1,10 +1,24 @@
+import { useNavigate } from 'react-router-dom';
 import './Dashboard.css';
+import { logout } from '../lib/api';
 
 const USER_PHOTO = '/src/assets/manu.jpeg';
 const USER_NAME = 'José Manuel Bañuelos';
 const USER_TYPE = 'Admin';
 
 function Dashboard() {
+  const navigate = useNavigate();
+
+  async function handleLogout() {
+    try {
+      await logout();
+    } catch (err) {
+      console.error('Error al cerrar sesión', err);
+    } finally {
+      navigate('/login', { replace: true });
+    }
+  }
+
   return (
     <main className="dashboard-page" aria-label="Panel de control">
       <div className="dashboard-grid">
@@ -15,7 +29,7 @@ function Dashboard() {
         <section className="dashboard-panel dashboard-profile" aria-label="Usuario">
           <div className="dashboard-profile-header">
             <span>{USER_TYPE}</span>
-            <button className="dashboard-logout" type="button">
+            <button className="dashboard-logout" type="button" onClick={handleLogout}>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <path d="M10 5H5v14h5M14 8l4 4-4 4M9 12h12" />
               </svg>
