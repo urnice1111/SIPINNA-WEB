@@ -64,7 +64,6 @@ function reportsToGeoJSON(reports: Report[]) {
 function MapContainer({ reports, selectedReport, onSelectReport }: MapContainerProps) {
   const [center, setCenter] = useState<CoordinatePair>(INITIAL_CENTER)
   const [zoom, setZoom] = useState(INITIAL_ZOOM)
-  const [boundaryCoordinateCount, setBoundaryCoordinateCount] = useState(0)
   const [mapLoaded, setMapLoaded] = useState(false)
   const mapRef = useRef<mapboxgl.Map | null>(null)
   const mapContainerRef = useRef<HTMLDivElement | null>(null)
@@ -166,7 +165,6 @@ function MapContainer({ reports, selectedReport, onSelectReport }: MapContainerP
           throw new Error('Atizapan MultiPolygon was not found')
         }
 
-        setBoundaryCoordinateCount(feature.geometry.coordinates.flat(2).length)
         map.addSource('atizapan-boundary', { type: 'geojson', data: feature })
         map.addLayer(
           {
@@ -238,8 +236,7 @@ function MapContainer({ reports, selectedReport, onSelectReport }: MapContainerP
     <>
       <div className="map-status">
         Longitude: {center[0].toFixed(4)} | Latitude: {center[1].toFixed(4)} |
-        Zoom: {zoom.toFixed(2)} | Reports: {reports.length} | Boundary points:{' '}
-        {boundaryCoordinateCount}
+        Zoom: {zoom.toFixed(2)}
       </div>
       <div id="map-container" ref={mapContainerRef} />
     </>
