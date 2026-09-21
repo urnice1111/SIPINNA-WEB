@@ -3,6 +3,7 @@ import type { FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './Login.css';
 import sipinnaLogo from '../assets/sipinna.png';
+import { login } from '../lib/api';
 
 function Login() {
   const navigate = useNavigate();
@@ -15,35 +16,10 @@ function Login() {
     event.preventDefault();
 
     try {
-      const loginData = {
-        email: correoOTelefono,
-        password: password,
-      };
-
-      console.log('Datos enviados:', loginData);
-
-      const response = await fetch( 'http://localhost:3000/auth/login',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(loginData),
-        }
-      );
-
-      const data = await response.json();
-
-      if (response.ok) {
-        console.log('Credenciales correctas');
-        console.log(data);
-        navigate('/dashboard', { replace: true });
-      } else {
-        console.log('Credenciales incorrectas');
-        console.log(data);
-      }
+      await login({ email: correoOTelefono, password });
+      navigate('/dashboard', { replace: true });
     } catch (error) {
-      console.error('Error de conexión:', error);
+      console.error('Credenciales incorrectas:', error);
     }
   };
 
