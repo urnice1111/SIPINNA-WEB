@@ -1,13 +1,13 @@
 import { useNavigate } from 'react-router-dom';
 import './Dashboard.css';
-import { logout } from '../lib/api';
+import { useAuth } from '../context/AuthContext';
 
 const USER_PHOTO = '/src/assets/manu.jpeg';
-const USER_NAME = 'José Manuel Bañuelos';
 const USER_TYPE = 'Admin';
 
 function Dashboard() {
   const navigate = useNavigate();
+  const { name, logout } = useAuth();
 
   async function handleLogout() {
     try {
@@ -42,7 +42,7 @@ function Dashboard() {
               alt="Foto del administrador"
               className="dashboard-avatar"
             />
-            <strong>{USER_NAME}</strong>
+            <strong>{name}</strong>
           </div>
         </section>
 

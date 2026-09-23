@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 
 import './Register.css';
 import sipinnaLogo from '../assets/sipinna.png';
-import { registerCitizen } from '../lib/api';
+import { api } from '../lib/api';
 
 function Register() {
   const [name, setName] = useState('');
@@ -22,7 +22,7 @@ function Register() {
     event.preventDefault();
 
     try {
-      await registerCitizen({
+      await api.registerCitizen({
         nombre: `${name} ${lastName}`,
         edad: Number(age),
         genero: gender,

@@ -3,10 +3,11 @@ import type { FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './Login.css';
 import sipinnaLogo from '../assets/sipinna.png';
-import { login } from '../lib/api';
+import { useAuth } from '../context/AuthContext';
 
 function Login() {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [correoOTelefono, setCorreoOTelefono] = useState('');
   const [password, setPassword] = useState('');
 
@@ -15,8 +16,16 @@ function Login() {
   ) => {
     event.preventDefault();
 
+    // El backend acepta email o número (no ambos): el otro va explícitamente en null.
+    const identificador = correoOTelefono.trim();
+    const esCorreo = identificador.includes('@');
+
     try {
-      await login({ email: correoOTelefono, password });
+      await login({
+        email: esCorreo ? identificador : null,
+        number: esCorreo ? null : identificador,
+        password,
+      });
       navigate('/dashboard', { replace: true });
     } catch (error) {
       console.error('Credenciales incorrectas:', error);
