@@ -3,7 +3,7 @@ import type { FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 
 import './Register.css';
-import sipinnaLogo from '../assets/sipinna.png';
+import sipinnaLogo from '../assets/sipinna.svg';
 import { api } from '../lib/api';
 
 function Register() {

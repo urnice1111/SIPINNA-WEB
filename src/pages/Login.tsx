@@ -2,7 +2,7 @@ import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './Login.css';
-import sipinnaLogo from '../assets/sipinna.png';
+import sipinnaLogo from '../assets/sipinna.svg';
 import { useAuth } from '../context/AuthContext';
 
 function Login() {
