@@ -10,6 +10,8 @@ function Login() {
   const { login } = useAuth();
   const [correoOTelefono, setCorreoOTelefono] = useState('');
   const [password, setPassword] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const handleSubmit = async (
     event: FormEvent<HTMLFormElement>
@@ -20,6 +22,9 @@ function Login() {
     const identificador = correoOTelefono.trim();
     const esCorreo = identificador.includes('@');
 
+    setErrorMessage(null);
+    setIsSubmitting(true);
+
     try {
       await login({
         email: esCorreo ? identificador : null,
@@ -29,6 +34,13 @@ function Login() {
       navigate('/dashboard', { replace: true });
     } catch (error) {
       console.error('Credenciales incorrectas:', error);
+      // fetch lanza TypeError cuando no hay respuesta del servidor
+      setErrorMessage(
+        error instanceof TypeError
+          ? 'No se pudo conectar con el servidor. Inténtalo de nuevo.'
+          : 'No se pudo iniciar sesión. Verifica tus credenciales e inténtalo de nuevo.'
+      );
+      setIsSubmitting(false);
     }
   };
 
@@ -78,8 +90,21 @@ function Login() {
             </a>
           </div>
 
-          <button type="submit">
-            Iniciar sesión
+          {errorMessage && (
+            <div className="login-error" role="alert">
+              {errorMessage}
+            </div>
+          )}
+
+          <button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? (
+              <span className="login-loading">
+                <span className="spinner" aria-hidden="true" />
+                Cargando...
+              </span>
+            ) : (
+              'Iniciar sesión'
+            )}
           </button>
         </form>
 

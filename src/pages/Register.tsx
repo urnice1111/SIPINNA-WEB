@@ -1,12 +1,15 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import './Register.css';
 import sipinnaLogo from '../assets/sipinna.svg';
 import { api } from '../lib/api';
+import { useAuth } from '../context/AuthContext';
 
 function Register() {
+  const navigate = useNavigate();
+  const { login } = useAuth();
   const [name, setName] = useState('');
   const [lastName, setLastName] = useState('');
   const [gender, setGender] =useState('');
@@ -15,11 +18,16 @@ function Register() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
  const handleSubmit = async (
   event: FormEvent<HTMLFormElement>
   ) => {
     event.preventDefault();
+
+    setErrorMessage(null);
+    setIsSubmitting(true);
 
     try {
       await api.registerCitizen({
@@ -30,9 +38,33 @@ function Register() {
         telefono: phone,
         password: password,
       });
-      console.log('Registro exitoso');
     } catch (error) {
       console.error('Error en el registro:', error);
+      setErrorMessage(
+        error instanceof TypeError
+          ? 'No se pudo conectar con el servidor. Inténtalo de nuevo.'
+          : 'No se pudo completar el registro. Revisa tus datos e inténtalo de nuevo.'
+      );
+      setIsSubmitting(false);
+      return;
+    }
+
+    // Al registrarse se inicia sesión con las mismas credenciales.
+    const correo = email.trim();
+
+    try {
+      await login({
+        email: correo ? correo : null,
+        number: correo ? null : phone.trim(),
+        password,
+      });
+      navigate('/dashboard', { replace: true });
+    } catch (error) {
+      console.error('Error al iniciar sesión tras el registro:', error);
+      setErrorMessage(
+        'Tu cuenta se creó, pero no se pudo iniciar sesión automáticamente. Inicia sesión manualmente.'
+      );
+      setIsSubmitting(false);
     }
   };
 
@@ -255,11 +287,25 @@ function Register() {
               </div>
             </div>
 
+            {errorMessage && (
+              <div className="register-error" role="alert">
+                {errorMessage}
+              </div>
+            )}
+
             <button
               className="register-button"
               type="submit"
+              disabled={isSubmitting}
             >
-              Crear cuenta
+              {isSubmitting ? (
+                <span className="register-loading">
+                  <span className="register-spinner" aria-hidden="true" />
+                  Cargando...
+                </span>
+              ) : (
+                'Crear cuenta'
+              )}
             </button>
           </form>
 
