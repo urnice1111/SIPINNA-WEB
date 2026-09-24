@@ -88,6 +88,17 @@ export const api = {
     });
   },
 
+  // motivo es obligatorio para cancelado, archivado y reincidente.
+  updateReportStatus(folio: string, estado: string, motivo?: string) {
+    return request<{ folio: string; estado: string; state_changed_at: string }>(
+      `/report/${encodeURIComponent(folio)}/status`,
+      {
+        method: 'PATCH',
+        body: JSON.stringify({ estado, motivo: motivo || undefined }),
+      },
+    );
+  },
+
   // zone acepta el UUID de la zona o el nombre del municipio.
   getReportsByZone(zone: string, signal?: AbortSignal) {
     return request<{ reports: Report[] | null }>(

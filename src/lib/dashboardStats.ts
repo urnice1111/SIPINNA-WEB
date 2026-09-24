@@ -12,15 +12,16 @@ export type StateKey =
 
 // Colores validados para daltonismo en este orden, incluido el par
 // Reincidente→Registrado donde se cierra la dona. Si se reordena, hay que revalidar.
-export const STATES: { key: StateKey; label: string; color: string }[] = [
-  { key: 'registrado', label: 'Registrado', color: '#2a78d6' },
-  { key: 'revision', label: 'En revisión', color: '#eb6834' },
-  { key: 'seguimiento', label: 'En seguimiento', color: '#4a3aa7' },
-  { key: 'canalizado', label: 'Canalizado', color: '#1baf7a' },
-  { key: 'concluido', label: 'Concluido', color: '#008300' },
-  { key: 'archivado', label: 'Archivado', color: '#e87ba4' },
-  { key: 'cancelado', label: 'Cancelado', color: '#eda100' },
-  { key: 'reincidente', label: 'Reincidente', color: '#e34948' },
+// value es el valor técnico que manda y recibe el backend.
+export const STATES: { key: StateKey; value: string; label: string; color: string }[] = [
+  { key: 'registrado', value: 'registrado', label: 'Registrado', color: '#2a78d6' },
+  { key: 'revision', value: 'en_revision', label: 'En revisión', color: '#eb6834' },
+  { key: 'seguimiento', value: 'en_seguimiento', label: 'En seguimiento', color: '#4a3aa7' },
+  { key: 'canalizado', value: 'canalizado', label: 'Canalizado', color: '#1baf7a' },
+  { key: 'concluido', value: 'concluido', label: 'Concluido', color: '#008300' },
+  { key: 'archivado', value: 'archivado', label: 'Archivado', color: '#e87ba4' },
+  { key: 'cancelado', value: 'cancelado', label: 'Cancelado', color: '#eda100' },
+  { key: 'reincidente', value: 'reincidente', label: 'Reincidente', color: '#e34948' },
 ];
 
 export const MONTHS = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
@@ -61,6 +62,11 @@ export function normalizeState(state: string | null | undefined): StateKey {
   if (s.includes('canaliz')) return 'canalizado';
   if (s.includes('conclu') || s.includes('complet') || s.includes('cerrad')) return 'concluido';
   return 'registrado';
+}
+
+export function stateLabel(state: string | null | undefined): string {
+  const key = normalizeState(state);
+  return STATES.find((s) => s.key === key)!.label;
 }
 
 function isSameDay(a: Date, b: Date) {

@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 import * as mapboxgl from 'mapbox-gl/esm'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import './InteractiveMap.css'
 import { api } from '../lib/api'
 import type { Report } from '../lib/api'
+import { STATES, normalizeState, stateLabel } from '../lib/dashboardStats'
 
 type CoordinatePair = [number, number]
 
@@ -13,12 +14,18 @@ type MapContainerProps = {
   onSelectReport: (folio: string) => void
 }
 
+type StatusFormProps = {
+  report: Report
+  onUpdated: (folio: string, estado: string, stateChangedAt: string) => void
+}
+
 type SidePanelProps = {
   reports: Report[]
   selectedReportId: string | null
   loading: boolean
   error: string | null
   onSelectReport: (folio: string) => void
+  onStatusUpdated: StatusFormProps['onUpdated']
 }
 
 const INITIAL_CENTER: CoordinatePair = [-99.2734, 19.5645]
@@ -229,12 +236,73 @@ function MapContainer({ reports, selectedReport, onSelectReport }: MapContainerP
   )
 }
 
+// El backend exige motivo para estos estados.
+const STATES_REQUIRING_REASON = ['cancelado', 'archivado', 'reincidente']
+
+function StatusForm({ report, onUpdated }: StatusFormProps) {
+  const currentValue = STATES.find((s) => s.key === normalizeState(report.last_state))!.value
+  const [estado, setEstado] = useState(currentValue)
+  const [motivo, setMotivo] = useState('')
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const reasonRequired = STATES_REQUIRING_REASON.includes(estado)
+  const canSubmit = !saving && estado !== currentValue && (!reasonRequired || motivo.trim() !== '')
+
+  async function handleSubmit(event: React.FormEvent) {
+    event.preventDefault()
+    setSaving(true)
+    setError(null)
+
+    try {
+      const res = await api.updateReportStatus(report.folio, estado, motivo.trim())
+      onUpdated(res.folio, res.estado, res.state_changed_at)
+      setMotivo('')
+    } catch (requestError) {
+      setError(
+        requestError instanceof Error ? requestError.message : 'No se pudo cambiar el estado',
+      )
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  return (
+    <form className="status-form" onSubmit={handleSubmit}>
+      <label>
+        Estado
+        <select value={estado} onChange={(e) => setEstado(e.target.value)}>
+          {STATES.map((state) => (
+            <option key={state.value} value={state.value}>
+              {state.label}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label>
+        Motivo{reasonRequired ? '' : ' (opcional)'}
+        <textarea
+          value={motivo}
+          rows={2}
+          required={reasonRequired}
+          onChange={(e) => setMotivo(e.target.value)}
+        />
+      </label>
+      {error && <p className="status-form__error">{error}</p>}
+      <button type="submit" disabled={!canSubmit}>
+        {saving ? 'Guardando...' : 'Cambiar estado'}
+      </button>
+    </form>
+  )
+}
+
 function SidePanel({
   reports,
   selectedReportId,
   loading,
   error,
   onSelectReport,
+  onStatusUpdated,
 }: SidePanelProps) {
   return (
     <div className="reports-panel">
@@ -251,25 +319,29 @@ function SidePanel({
 
       <div className="report-list">
         {reports.map((report) => (
-          <button
-            key={report.folio}
-            type="button"
-            className={
-              report.folio === selectedReportId
-                ? 'report-card report-card--selected'
-                : 'report-card'
-            }
-            onClick={() => onSelectReport(report.folio)}
-          >
-            <span className="report-card__heading">
-              <strong>{report.folio}</strong>
-              <span>{report.last_state}</span>
-            </span>
-            <span className="report-card__description">{report.description}</span>
-            <span className="report-card__meta">
-              {report.zone_name || 'Zona sin especificar'} · {report.work_type}
-            </span>
-          </button>
+          <Fragment key={report.folio}>
+            <button
+              type="button"
+              className={
+                report.folio === selectedReportId
+                  ? 'report-card report-card--selected'
+                  : 'report-card'
+              }
+              onClick={() => onSelectReport(report.folio)}
+            >
+              <span className="report-card__heading">
+                <strong>{report.folio}</strong>
+                <span>{stateLabel(report.last_state)}</span>
+              </span>
+              <span className="report-card__description">{report.description}</span>
+              <span className="report-card__meta">
+                {report.zone_name || 'Zona sin especificar'} · {report.work_type}
+              </span>
+            </button>
+            {report.folio === selectedReportId && (
+              <StatusForm key={report.last_state} report={report} onUpdated={onStatusUpdated} />
+            )}
+          </Fragment>
         ))}
       </div>
     </div>
@@ -316,6 +388,16 @@ export default function InteractiveMap() {
   const selectedReport =
     reports.find((report) => report.folio === selectedReportId) ?? null
 
+  function handleStatusUpdated(folio: string, estado: string, stateChangedAt: string) {
+    setReports((current) =>
+      current.map((report) =>
+        report.folio === folio
+          ? { ...report, last_state: estado, state_changed_at: stateChangedAt }
+          : report,
+      ),
+    )
+  }
+
   return (
     <main className="interactive-map-layout">
       <section className="map-panel">
@@ -333,6 +415,7 @@ export default function InteractiveMap() {
           loading={loading}
           error={error}
           onSelectReport={setSelectedReportId}
+          onStatusUpdated={handleStatusUpdated}
         />
       </aside>
     </main>
