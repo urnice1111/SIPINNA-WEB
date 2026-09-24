@@ -10,6 +10,14 @@
   font-family: Arial, Helvetica, sans-serif;
 }
 
+/* Evita la franja blanca del rebote al hacer scroll más allá del borde (macOS/iOS):
+   el fondo del documento toma el color del dashboard y se desactiva el rebote. */
+html:has(.dashboard-page),
+html:has(.dashboard-page) body {
+  background-color: #dceff7;
+  overscroll-behavior-y: none;
+}
+
 .dashboard-page,
 .dashboard-page * {
   box-sizing: border-box;
@@ -110,10 +118,361 @@
   object-fit: cover;
 }
 
+/* ---------- KPIs ---------- */
+.dashboard-panel--overview,
+.dashboard-panel--kpi,
+.dashboard-panel--summary,
+.dashboard-panel--recent,
+.dashboard-panel--chart,
+.dashboard-panel--featured {
+  display: flex;
+  flex-direction: column;
+  padding: 18px 22px;
+}
+
+.dashboard-title,
+.dashboard-subtitle {
+  margin: 0;
+  color: #17212d;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.dashboard-subtitle { font-weight: 600; }
+
+.dashboard-muted {
+  color: #54667a;
+  font-size: 12px;
+}
+
+.dashboard-error {
+  max-width: 1600px;
+  margin: 0 auto 10px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  background: rgba(219, 40, 75, 0.1);
+  color: #a71937;
+  font-size: 13px;
+}
+
+.dashboard-stat {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: auto 0 0;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.dashboard-panel--kpi .dashboard-stat { margin: auto 0; justify-content: center; }
+
+.dashboard-stat-value {
+  color: #1f9d4c;
+  font-size: clamp(36px, 3.4vw, 50px);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Atajo al mapa */
+.dashboard-map-link {
+  position: relative;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background-color: #cfe0ea;
+  background-position: center;
+  background-size: cover;
+  color: #17212d;
+  text-decoration: none;
+}
+
+.dashboard-map-link span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.72);
+  font-size: 22px;
+  font-weight: 700;
+  transition: transform 0.15s ease;
+}
+
+.dashboard-map-link svg { width: 20px; height: 20px; }
+.dashboard-map-link:hover span { transform: scale(1.05); }
+.dashboard-map-link:focus-visible { outline: 2px solid #1495ed; outline-offset: 3px; }
+
+/* Zona con más reportes */
+.dashboard-top-zone {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.dashboard-top-zone > div {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.dashboard-zone-name {
+  font-size: clamp(18px, 1.6vw, 24px);
+  line-height: 1.2;
+}
+
+.dashboard-top-zone .dashboard-stat { margin: 0; }
+
+/* Reportes recientes */
+.dashboard-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dashboard-link {
+  color: #2563eb;
+  font-size: 13px;
+  text-decoration: none;
+}
+
+.dashboard-link:hover { text-decoration: underline; }
+
+.dashboard-recent {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+  overflow-y: auto;
+}
+
+.dashboard-recent li {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+}
+
+.dashboard-recent-avatar {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #fff;
+  color: #2f4bc4;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.dashboard-recent-who {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  font-size: 13px;
+}
+
+.dashboard-recent-who strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dashboard-recent-coords {
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Tendencias (columna derecha) */
+.dashboard-charts { gap: 14px; overflow: hidden; }
+.dashboard-charts > div { display: flex; flex: 1; flex-direction: column; gap: 6px; min-height: 0; }
+
+/* ---------- Gráficas ---------- */
+.chart,
+.donut { position: relative; }
+
+.chart svg { display: block; width: 100%; height: auto; }
+
+.chart-axes text {
+  fill: #6b7c8f;
+  font-size: 7px;
+}
+
+.chart-grid { stroke: rgba(23, 33, 45, 0.08); stroke-width: 0.6; }
+.chart-crosshair { stroke: rgba(23, 33, 45, 0.35); stroke-width: 0.8; stroke-dasharray: 2 2; }
+
+.chart-legend {
+  display: flex;
+  gap: 14px;
+  margin: 2px 0 0;
+  padding: 0;
+  list-style: none;
+  color: #54667a;
+  font-size: 11px;
+}
+
+.chart-legend li,
+.chart-tooltip-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.chart-swatch {
+  flex-shrink: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+}
+
+.chart-swatch--round { border-radius: 50%; }
+
+.chart-tooltip {
+  position: absolute;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px 9px;
+  border-radius: 8px;
+  background: #17212d;
+  color: #fff;
+  font-size: 11px;
+  white-space: nowrap;
+  pointer-events: none;
+  transform: translate(-50%, calc(-100% - 10px));
+}
+
+/* Dona */
+.donut {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(16px, 3vw, 40px);
+  flex-wrap: wrap;
+}
+
+.donut-svg { width: min(170px, 45%); height: auto; }
+.donut-svg circle { transition: opacity 0.15s ease; }
+.donut-svg circle[stroke-dasharray]:hover { opacity: 0.8; }
+.donut-value { fill: #17212d; font-size: 20px; font-weight: 700; }
+.donut-label { fill: #54667a; font-size: 8px; }
+
+.donut-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 12px;
+}
+
+.donut-legend li {
+  display: grid;
+  grid-template-columns: 10px 1fr auto;
+  align-items: center;
+  gap: 8px;
+  min-width: 150px;
+  color: #3d4c5c;
+}
+
+.donut-legend strong { font-variant-numeric: tabular-nums; }
+
+/* Barras horizontales */
+.hbar-list {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 16px;
+  margin: 24px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hbar-row {
+  display: grid;
+  grid-template-columns: minmax(80px, 30%) 1fr 36px;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+}
+
+.hbar-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.hbar-track {
+  height: 22px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.55);
+  overflow: hidden;
+}
+
+.hbar-fill {
+  display: block;
+  height: 100%;
+  border-radius: 0 6px 6px 0;
+  background: #2563eb;
+}
+
+.hbar-row:not(:first-child) .hbar-fill { background: #5a9be8; }
+
+.hbar-value {
+  font-size: 15px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* En escritorio el dashboard ocupa exactamente la ventana: sin scroll vertical.
+   Las filas flexibles se encogen y las gráficas se ajustan al alto disponible. */
+@media (min-width: 1001px) {
+  .dashboard-grid {
+    grid-template-rows: 104px 136px minmax(0, 1fr);
+    gap: 12px 14px;
+    height: calc(100vh - 30px);
+    height: calc(100dvh - 30px);
+    min-height: 600px;
+  }
+
+  .dashboard-panel--overview,
+  .dashboard-panel--kpi,
+  .dashboard-panel--summary,
+  .dashboard-panel--recent,
+  .dashboard-panel--chart,
+  .dashboard-panel--featured {
+    padding: 14px 20px;
+    min-height: 0;
+  }
+
+  .dashboard-charts { gap: 8px; }
+  .donut-legend { gap: 5px; }
+
+  .dashboard-charts .chart {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .dashboard-charts .chart svg {
+    flex: 1;
+    min-height: 0;
+    height: 100%;
+  }
+
+  .hbar-list { margin-top: 16px; gap: 12px; }
+  .dashboard-recent { gap: 8px; margin-top: 10px; }
+}
+
 @media (max-width: 1000px) {
   .dashboard-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    grid-template-rows: 122px 150px 200px 280px 320px;
+    grid-template-rows: 122px 150px 300px 360px auto;
     grid-template-areas:
       'profile profile'
       'kpi shortcut'
@@ -127,7 +486,7 @@
   .dashboard-page { padding: 16px; }
   .dashboard-grid {
     gap: 14px;
-    grid-template-rows: 122px 120px 220px 160px 260px 260px 360px;
+    grid-template-rows: 122px 120px auto auto auto auto auto;
     grid-template-areas:
       'profile profile'
       'kpi shortcut'
