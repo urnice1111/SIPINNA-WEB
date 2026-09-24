@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
 import * as mapboxgl from 'mapbox-gl/esm'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import './InteractiveMap.css'
@@ -229,9 +230,17 @@ function MapContainer({ reports, selectedReport, onSelectReport }: MapContainerP
 
   return (
     <>
-      <div className="map-status">
-        Longitude: {center[0].toFixed(4)} | Latitude: {center[1].toFixed(4)} |
-        Zoom: {zoom.toFixed(2)}
+      <div className="map-toolbar">
+        <Link to="/dashboard" className="map-back-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M15 18l-6-6 6-6" />
+          </svg>
+          Dashboard
+        </Link>
+        <div className="map-status">
+          Longitud: {center[0].toFixed(4)} · Latitud: {center[1].toFixed(4)} · Zoom:{' '}
+          {zoom.toFixed(2)}
+        </div>
       </div>
       <div id="map-container" ref={mapContainerRef} />
     </>

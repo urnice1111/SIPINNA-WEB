@@ -26,7 +26,7 @@ html:has(.dashboard-page) body {
 .dashboard-grid {
   display: grid;
   grid-template-columns: 1.8fr 1fr 1fr 1.85fr;
-  grid-template-rows: 122px 164px minmax(320px, 1fr);
+  grid-template-rows: minmax(122px, auto) 164px minmax(320px, 1fr);
   grid-template-areas:
     'overview kpi shortcut profile'
     'overview summary summary featured'
@@ -62,33 +62,80 @@ html:has(.dashboard-page) body {
 
 .dashboard-profile {
   grid-area: profile;
-  padding: 14px 18px;
-}
-
-.dashboard-profile-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  font-size: 12px;
+  gap: 14px;
+  min-height: 0;
+  padding: 12px 18px;
+}
+
+.dashboard-avatar {
+  flex-shrink: 0;
+  width: 52px;
+  height: 52px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  background: #d3e3f0;
+  color: #54718f;
+  object-fit: cover;
+}
+
+.dashboard-user-info {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.dashboard-user-type {
+  color: #54667a;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.dashboard-user-info strong {
+  font-family: var(--font-heading);
+  font-size: 18px;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.dashboard-user-zone {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #54667a;
+  font-size: 14px;
+  line-height: 1.3;
+}
+
+.dashboard-user-zone svg {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
 }
 
 .dashboard-logout {
   display: inline-flex;
+  flex-shrink: 0;
+  align-self: flex-start;
   align-items: center;
   gap: 5px;
-  padding: 5px 0;
+  padding: 2px 0;
   border: 0;
   background: transparent;
   color: #db284b;
   font: inherit;
-  font-size: 11px;
+  font-size: 13px;
   cursor: pointer;
 }
 
 .dashboard-logout svg {
-  width: 19px;
-  height: 19px;
+  width: 20px;
+  height: 20px;
 }
 
 .dashboard-logout:hover { color: #a71937; }
@@ -96,26 +143,6 @@ html:has(.dashboard-page) body {
   outline: 2px solid #1495ed;
   outline-offset: 4px;
   border-radius: 4px;
-}
-
-.dashboard-user {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-top: 13px;
-  font-size: 14px;
-}
-
-.dashboard-avatar {
-  flex-shrink: 0;
-  width: 42px;
-  height: 42px;
-  overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.8);
-  border-radius: 50%;
-  background: #d3e3f0;
-  color: #54718f;
-  object-fit: cover;
 }
 
 /* ---------- KPIs ---------- */
@@ -432,7 +459,7 @@ html:has(.dashboard-page) body {
    Las filas flexibles se encogen y las gráficas se ajustan al alto disponible. */
 @media (min-width: 1001px) {
   .dashboard-grid {
-    grid-template-rows: 104px 136px minmax(0, 1fr);
+    grid-template-rows: minmax(104px, auto) 136px minmax(0, 1fr);
     gap: 12px 14px;
     height: calc(100vh - 30px);
     height: calc(100dvh - 30px);
@@ -472,7 +499,7 @@ html:has(.dashboard-page) body {
 @media (max-width: 1000px) {
   .dashboard-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    grid-template-rows: 122px 150px 300px 360px auto;
+    grid-template-rows: minmax(122px, auto) 150px 300px 360px auto;
     grid-template-areas:
       'profile profile'
       'kpi shortcut'
@@ -486,7 +513,7 @@ html:has(.dashboard-page) body {
   .dashboard-page { padding: 16px; }
   .dashboard-grid {
     gap: 14px;
-    grid-template-rows: 122px 120px auto auto auto auto auto;
+    grid-template-rows: minmax(122px, auto) 120px auto auto auto auto auto;
     grid-template-areas:
       'profile profile'
       'kpi shortcut'

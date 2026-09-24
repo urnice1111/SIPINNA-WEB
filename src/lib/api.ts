@@ -16,8 +16,14 @@ export type RegisterCitizenPayload = {
   password: string;
 };
 
+// user_type viene del rol en la tabla admins; si el usuario no es staff es 'citizen'.
+export type UserType = 'administrador' | 'alimentador' | 'citizen';
+
 export type SessionResponse = {
   name: string;
+  user_type: UserType;
+  // Vacío para ciudadanos o staff sin zona asignada.
+  zone_name: string;
 };
 
 // La forma exacta del reporte la define el backend en POST /report.

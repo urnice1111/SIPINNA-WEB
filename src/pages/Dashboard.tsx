@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import './Dashboard.css';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../lib/api';
-import type { Report } from '../lib/api';
+import type { Report, UserType } from '../lib/api';
 import {
   MONTHS,
   STATES,
@@ -19,7 +19,11 @@ import {
 } from '../components/DashboardCharts';
 
 const USER_PHOTO = '/src/assets/manu.jpeg';
-const USER_TYPE = 'Admin';
+const USER_TYPE_LABELS: Record<UserType, string> = {
+  administrador: 'Administrador',
+  alimentador: 'Alimentador',
+  citizen: 'Ciudadano',
+};
 const REPORTS_ZONE: string | undefined = import.meta.env.VITE_REPORTS_ZONE;
 const MONTH_NUMBERS = MONTHS.map((_, i) => String(i + 1));
 const MAP_PREVIEW_URL =
@@ -37,7 +41,8 @@ function initials(name: string) {
 
 function Dashboard() {
   const navigate = useNavigate();
-  const { name, logout } = useAuth();
+  const { user, logout } = useAuth();
+  const userTypeLabel = user ? USER_TYPE_LABELS[user.userType] ?? user.userType : '';
   const [reports, setReports] = useState<Report[]>([]);
   const [loading, setLoading] = useState(Boolean(REPORTS_ZONE));
   const [error, setError] = useState<string | null>(
@@ -116,23 +121,28 @@ function Dashboard() {
         </Link>
 
         <section className="dashboard-panel dashboard-profile" aria-label="Usuario">
-          <div className="dashboard-profile-header">
-            <span>{USER_TYPE}</span>
-            <button className="dashboard-logout" type="button" onClick={handleLogout}>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <path d="M10 5H5v14h5M14 8l4 4-4 4M9 12h12" />
+          <img
+            src={USER_PHOTO}
+            alt={`Foto de ${user?.name || 'usuario'}`}
+            className="dashboard-avatar"
+          />
+          <div className="dashboard-user-info">
+            <span className="dashboard-user-type">{userTypeLabel}</span>
+            <strong>{user?.name}</strong>
+            <span className="dashboard-user-zone">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21Z" />
+                <circle cx="12" cy="9.5" r="2.5" />
               </svg>
-              Cerrar sesión
-            </button>
+              {user?.zoneName || 'Sin zona asignada'}
+            </span>
           </div>
-          <div className="dashboard-user">
-            <img
-              src={USER_PHOTO}
-              alt="Foto del administrador"
-              className="dashboard-avatar"
-            />
-            <strong>{name}</strong>
-          </div>
+          <button className="dashboard-logout" type="button" onClick={handleLogout}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M10 5H5v14h5M14 8l4 4-4 4M9 12h12" />
+            </svg>
+            Cerrar sesión
+          </button>
         </section>
 
         <section className="dashboard-panel dashboard-panel--summary" aria-labelledby="kpi-top-zone">

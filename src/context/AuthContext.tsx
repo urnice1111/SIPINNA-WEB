@@ -1,10 +1,16 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 import { api } from '../lib/api';
-import type { LoginPayload } from '../lib/api';
+import type { LoginPayload, SessionResponse, UserType } from '../lib/api';
+
+export type SessionUser = {
+  name: string;
+  userType: UserType;
+  zoneName: string;
+};
 
 type AuthContextValue = {
-  name: string | null;
+  user: SessionUser | null;
   isLoading: boolean;
   login: (payload: LoginPayload) => Promise<void>;
   logout: () => Promise<void>;
@@ -12,10 +18,18 @@ type AuthContextValue = {
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
-// Solo se guarda el nombre del usuario; el JWT nunca llega a JavaScript,
+function toSessionUser(session: SessionResponse): SessionUser {
+  return {
+    name: session.name ?? '',
+    userType: session.user_type,
+    zoneName: session.zone_name ?? '',
+  };
+}
+
+// Solo se guarda el nombre y el tipo de usuario; el JWT nunca llega a JavaScript,
 // vive exclusivamente en la cookie httpOnly que maneja el backend.
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [name, setName] = useState<string | null>(null);
+  const [user, setUser] = useState<SessionUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -24,10 +38,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     api
       .me()
       .then((session) => {
-        if (!cancelled) setName(session.name);
+        if (!cancelled) setUser(toSessionUser(session));
       })
       .catch(() => {
-        if (!cancelled) setName(null);
+        if (!cancelled) setUser(null);
       })
       .finally(() => {
         if (!cancelled) setIsLoading(false);
@@ -40,7 +54,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = useCallback(async (payload: LoginPayload) => {
     const session = await api.login(payload);
-    setName(session.name);
+    setUser(toSessionUser(session));
   }, []);
 
   const logout = useCallback(async () => {
@@ -48,13 +62,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Solo el backend puede borrar la cookie httpOnly.
       await api.logout();
     } finally {
-      setName(null);
+      setUser(null);
     }
   }, []);
 
   const value = useMemo(
-    () => ({ name, isLoading, login, logout }),
-    [name, isLoading, login, logout],
+    () => ({ user, isLoading, login, logout }),
+    [user, isLoading, login, logout],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
