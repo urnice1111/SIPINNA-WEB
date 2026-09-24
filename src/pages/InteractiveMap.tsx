@@ -2,22 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import * as mapboxgl from 'mapbox-gl/esm'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import './InteractiveMap.css'
-
-type Report = {
-  folio: string
-  description: string
-  latitude: number
-  longitude: number
-  children_quantity: number
-  work_type: string
-  created_at: string
-  suspicius_level: number
-  children_age: string
-  zone_name: string
-  citizen_name: string
-  last_state: string
-  state_changed_at: string
-}
+import { api } from '../lib/api'
+import type { Report } from '../lib/api'
 
 type CoordinatePair = [number, number]
 
@@ -304,26 +290,14 @@ export default function InteractiveMap() {
       setError(null)
 
       try {
-        const reportsUrl = import.meta.env.VITE_REPORTS_API_URL ?? '/api/reports'
-        const response = await fetch(reportsUrl, { signal: abortController.signal })
+        const zone = import.meta.env.VITE_REPORTS_ZONE
+        if (!zone) throw new Error('Falta configurar VITE_REPORTS_ZONE')
 
-        if (!response.ok) {
-          throw new Error(`No se pudieron cargar los reportes (${response.status})`)
-        }
-
-        const reportsData: unknown = await response.json()
-        if (
-          typeof reportsData !== 'object' ||
-          reportsData === null ||
-          !('reports' in reportsData) ||
-          !Array.isArray(reportsData.reports)
-        ) {
-          throw new Error('La respuesta no contiene una lista de reportes')
-        }
-
-        setReports(reportsData.reports as Report[])
+        const data = await api.getReportsByZone(zone, abortController.signal)
+        // Go serializa un slice vacío como null.
+        setReports(data.reports ?? [])
       } catch (requestError) {
-        if (requestError instanceof DOMException && requestError.name === 'AbortError') return
+        if (abortController.signal.aborted) return
 
         setError(
           requestError instanceof Error

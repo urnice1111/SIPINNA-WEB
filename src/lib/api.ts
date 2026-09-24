@@ -20,8 +20,25 @@ export type SessionResponse = {
   name: string;
 };
 
-// La forma exacta del reporte la define el backend en POST /reportes/crear.
+// La forma exacta del reporte la define el backend en POST /report.
 export type CrearReportePayload = Record<string, unknown>;
+
+// Detalle que devuelve GET /report/:zone_id (solo admin).
+export type Report = {
+  folio: string;
+  description: string;
+  latitude: number;
+  longitude: number;
+  children_quantity: number;
+  work_type: string;
+  created_at: string;
+  suspicius_level: number;
+  children_age: string;
+  zone_name: string;
+  citizen_name: string;
+  last_state: string;
+  state_changed_at: string;
+};
 
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const response = await fetch(`${API_BASE_URL}${path}`, {
@@ -65,9 +82,17 @@ export const api = {
   },
 
   crearReporte(data: CrearReportePayload) {
-    return request<unknown>('/reportes/crear', {
+    return request<unknown>('/report', {
       method: 'POST',
       body: JSON.stringify(data),
     });
+  },
+
+  // zone acepta el UUID de la zona o el nombre del municipio.
+  getReportsByZone(zone: string, signal?: AbortSignal) {
+    return request<{ reports: Report[] | null }>(
+      `/report/${encodeURIComponent(zone)}`,
+      { signal },
+    );
   },
 };
