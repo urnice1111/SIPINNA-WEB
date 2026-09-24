@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import * as mapboxgl from 'mapbox-gl/esm'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import './InteractiveMap.css'
@@ -18,6 +18,8 @@ type StatusFormProps = {
   report: Report
   onUpdated: (folio: string, estado: string, stateChangedAt: string) => void
 }
+
+type ReportDetailsProps = StatusFormProps
 
 type SidePanelProps = {
   reports: Report[]
@@ -296,6 +298,44 @@ function StatusForm({ report, onUpdated }: StatusFormProps) {
   )
 }
 
+const dateFormatter = new Intl.DateTimeFormat('es-MX', {
+  dateStyle: 'medium',
+  timeStyle: 'short',
+})
+
+function formatDate(value: string) {
+  const date = new Date(value)
+  return Number.isNaN(date.getTime()) ? value || '—' : dateFormatter.format(date)
+}
+
+function ReportDetails({ report, onUpdated }: ReportDetailsProps) {
+  const details: [string, string | number][] = [
+    ['Reportado por', report.citizen_name || '—'],
+    ['Fecha del reporte', formatDate(report.created_at)],
+    ['Tipo de trabajo', report.work_type || '—'],
+    ['Zona', report.zone_name || 'Zona sin especificar'],
+    ['Niñas, niños o adolescentes', report.children_quantity],
+    ['Edades', report.children_age || '—'],
+    ['Nivel de sospecha', report.suspicius_level],
+    ['Último cambio de estado', formatDate(report.state_changed_at)],
+    ['Ubicación', `${report.latitude.toFixed(5)}, ${report.longitude.toFixed(5)}`],
+  ]
+
+  return (
+    <div className="report-details">
+      <dl className="report-details__list">
+        {details.map(([label, value]) => (
+          <div key={label}>
+            <dt>{label}</dt>
+            <dd>{value}</dd>
+          </div>
+        ))}
+      </dl>
+      <StatusForm key={report.last_state} report={report} onUpdated={onUpdated} />
+    </div>
+  )
+}
+
 function SidePanel({
   reports,
   selectedReportId,
@@ -304,6 +344,13 @@ function SidePanel({
   onSelectReport,
   onStatusUpdated,
 }: SidePanelProps) {
+  const selectedCardRef = useRef<HTMLDivElement | null>(null)
+
+  // Cuando el reporte se elige desde el mapa, lo traemos a la vista en la lista.
+  useEffect(() => {
+    selectedCardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+  }, [selectedReportId])
+
   return (
     <div className="reports-panel">
       <div className="sidePanelTitle">
@@ -319,7 +366,11 @@ function SidePanel({
 
       <div className="report-list">
         {reports.map((report) => (
-          <Fragment key={report.folio}>
+          <div
+            key={report.folio}
+            ref={report.folio === selectedReportId ? selectedCardRef : undefined}
+            className="report-item"
+          >
             <button
               type="button"
               className={
@@ -327,6 +378,7 @@ function SidePanel({
                   ? 'report-card report-card--selected'
                   : 'report-card'
               }
+              aria-expanded={report.folio === selectedReportId}
               onClick={() => onSelectReport(report.folio)}
             >
               <span className="report-card__heading">
@@ -339,9 +391,9 @@ function SidePanel({
               </span>
             </button>
             {report.folio === selectedReportId && (
-              <StatusForm key={report.last_state} report={report} onUpdated={onStatusUpdated} />
+              <ReportDetails report={report} onUpdated={onStatusUpdated} />
             )}
-          </Fragment>
+          </div>
         ))}
       </div>
     </div>
@@ -414,7 +466,9 @@ export default function InteractiveMap() {
           selectedReportId={selectedReportId}
           loading={loading}
           error={error}
-          onSelectReport={setSelectedReportId}
+          onSelectReport={(folio) =>
+            setSelectedReportId((current) => (current === folio ? null : folio))
+          }
           onStatusUpdated={handleStatusUpdated}
         />
       </aside>

@@ -6,6 +6,22 @@
   left: 0;
 }
 
-body, html { 
-  font-family: monospace;
+/* Montserrat para títulos y navegación; Open Sans para texto corrido.
+   Las fuentes se cargan desde Google Fonts en index.html. */
+:root {
+  --font-heading: 'Montserrat', 'Poppins', 'Outfit', system-ui, sans-serif;
+  --font-body: 'Open Sans', 'Roboto', 'Lato', system-ui, sans-serif;
+}
+
+body, html {
+  font-family: var(--font-body);
+}
+
+h1, h2, h3, h4, h5, h6, nav {
+  font-family: var(--font-heading);
+}
+
+/* Los controles de formulario no heredan la fuente por defecto. */
+button, input, select, textarea {
+  font-family: inherit;
 }
